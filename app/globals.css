@@ -1,0 +1,260 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Font families */
+.font-heading {
+  font-family: var(--font-oswald);
+  letter-spacing: -0.02em;
+}
+
+.font-sans {
+  font-family: var(--font-dm-sans);
+  letter-spacing: -0.01em;
+}
+
+/* Tight letter spacing for specific elements */
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Video player custom styles */
+.video-overlay {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 0.3s ease-in-out;
+}
+
+/* Hover effects */
+.lesson-item:hover {
+  transform: translateX(2px);
+}
+
+.module-header:hover {
+  @apply bg-muted/50;
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+.focusable:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom badge styles */
+.badge-pdf {
+  @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+}
+
+.badge-doc {
+  @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+}
+
+.badge-zip {
+  @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+}
+
+.badge-fig {
+  @apply bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400;
+}
+
+/* Responsive video container */
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.video-container iframe,
+.video-container video,
+.video-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dark mode specific styles */
+.dark .video-overlay {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+  }
+}
+
+/* Enhanced typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-oswald);
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+p,
+span,
+div {
+  font-family: var(--font-dm-sans);
+  letter-spacing: -0.01em;
+}
+
+/* Button enhancements */
+button {
+  font-family: var(--font-dm-sans);
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+/* Theme transition */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom gradient backgrounds for dark mode */
+.dark .gradient-bg {
+  background: linear-gradient(135deg, rgb(30, 41, 59) 0%, rgb(15, 23, 42) 100%);
+}
+
+.gradient-bg {
+  background: linear-gradient(
+    135deg,
+    rgb(248, 250, 252) 0%,
+    rgb(241, 245, 249) 100%
+  );
+}
