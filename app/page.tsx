@@ -68,27 +68,7 @@ const courseData: Module[] = [
         completed: true,
         videoUrl: "/videos/framer-wprowadzenie.mov",
         description:
-          "Poznaj podstawy Framera i dowiedz się, co możesz osiągnąć dzięki temu narzędziu.",
-        materials: [
-          {
-            name: "Przewodnik po kursie.pdf",
-            type: "pdf",
-            url: "#",
-            size: "2.1 MB",
-          },
-          {
-            name: "Zasoby startowe.zip",
-            type: "zip",
-            url: "#",
-            size: "15.3 MB",
-          },
-          {
-            name: "Szablon projektu.fig",
-            type: "fig",
-            url: "#",
-            size: "4.2 MB",
-          },
-        ],
+          "Dowiedz się, czego nauczysz się w trakcie kursu i zobacz jak działa Framer.",
       },
       {
         id: "framer-zakladanie-konta",
@@ -97,15 +77,7 @@ const courseData: Module[] = [
         completed: true,
         videoUrl: "/videos/kurs-framer-zakladanie-konta.mov",
         description:
-          "Przegląd możliwości Framera i porównanie z innymi narzędziami do prototypowania.",
-        materials: [
-          {
-            name: "Porównanie narzędzi.pdf",
-            type: "pdf",
-            url: "#",
-            size: "1.8 MB",
-          },
-        ],
+          "Praktyczny poradnik zakładania konta we Framerze.",
       },
       {
         id: "framer-podstawowe-funkcje",
@@ -114,15 +86,7 @@ const courseData: Module[] = [
         completed: true,
         videoUrl: "/videos/framer-podstawowe-funkcje.mov",
         description:
-          "Przegląd możliwości Framera i porównanie z innymi narzędziami do prototypowania.",
-        materials: [
-          {
-            name: "Porównanie narzędzi.pdf",
-            type: "pdf",
-            url: "#",
-            size: "1.8 MB",
-          },
-        ],
+          "Omówienie najważniejszych funkcji edytora.",
       },
     ],
   },
@@ -138,7 +102,7 @@ const courseData: Module[] = [
         duration: "4m 26s",
         completed: false,
         videoUrl: "/videos/framer-tworzenie-sekcji.mov",
-        description: "Szczegółowy przegląd interfejsu użytkownika Framera.",
+        description: "Zobacz jak przygotować i sformatować sekcję w projekcie.",
       },
       {
         id: "canvas",
@@ -146,7 +110,7 @@ const courseData: Module[] = [
         duration: "6m 51s",
         completed: false,
         videoUrl: "/videos/framer-podstrona-linki.mov",
-        description: "Jak efektywnie poruszać się po obszarze roboczym.",
+        description: "Dodawanie podstron i linków w ramach projektu.",
       },
     ],
   },
@@ -162,15 +126,7 @@ const courseData: Module[] = [
         duration: "7m 4s",
         completed: false,
         videoUrl: "/videos/framer-narzedzia-ai.mov",
-        description: "Tworzenie i edytowanie podstawowych kształtów.",
-        materials: [
-          {
-            name: "Biblioteka kształtów.fig",
-            type: "fig",
-            url: "#",
-            size: "2.1 MB",
-          },
-        ],
+        description: "Przyjrzymy się narzędziom AI w Framerze - Wireframer i Workshop.",
       },
     ],
   },
@@ -186,7 +142,7 @@ const courseData: Module[] = [
         duration: "6m 2s",
         completed: false,
         videoUrl: "/videos/framer-rozwijanie-strony.mov",
-        description: "Tworzenie pierwszych animacji w Framerze.",
+        description: "Pracujemy nad rozbudową strony krok po kroku.",
       },
     ],
   },
@@ -202,7 +158,7 @@ const courseData: Module[] = [
         duration: "1m 56s",
         completed: false,
         videoUrl: "/videos/framer-podsumowanie-publikacja.mov",
-        description: "Tworzenie klikowalnych prototypów aplikacji.",
+        description: "Czas na publikację projektu i krótkie podsumowanie.",
       },
     ],
   },
@@ -224,6 +180,11 @@ export default function LearningPlatform() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [showControls, setShowControls] = useState(true);
+  const [showNext, setShowNext] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+
+  const nextTimeoutRef = useRef<NodeJS.Timeout>();
+  const countdownIntervalRef = useRef<NodeJS.Timeout>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -240,12 +201,34 @@ export default function LearningPlatform() {
   }, []);
 
   useEffect(() => {
+    if (showNext) {
+      setCountdown(5);
+      countdownIntervalRef.current = setInterval(() => {
+        setCountdown((c) => c - 1);
+      }, 1000);
+      nextTimeoutRef.current = setTimeout(() => {
+        goToNextLesson();
+      }, 5000);
+    }
+    return () => {
+      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+      if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
+    };
+  }, [showNext]);
+
+  useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const handleTimeUpdate = () => setCurrentTime(video.currentTime);
     const handleDurationChange = () => setDuration(video.duration);
-    const handleEnded = () => setIsPlaying(false);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      const nextLesson = findNextLesson();
+      if (nextLesson) {
+        setShowNext(true);
+      }
+    };
 
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("durationchange", handleDurationChange);
@@ -304,6 +287,7 @@ export default function LearningPlatform() {
     setCurrentLesson(lesson);
     setIsPlaying(false);
     setCurrentTime(0);
+    setShowNext(false);
   };
 
   const togglePlay = () => {
@@ -316,6 +300,7 @@ export default function LearningPlatform() {
       video.play();
     }
     setIsPlaying(!isPlaying);
+    setShowNext(false);
   };
 
   const handleSeek = (value: number[]) => {
@@ -414,6 +399,28 @@ export default function LearningPlatform() {
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const findNextLesson = () => {
+    for (let mi = 0; mi < modules.length; mi++) {
+      const lessons = modules[mi].lessons;
+      const li = lessons.findIndex((l) => l.id === currentLesson.id);
+      if (li !== -1) {
+        if (li + 1 < lessons.length) return lessons[li + 1];
+        if (mi + 1 < modules.length) return modules[mi + 1].lessons[0];
+      }
+    }
+    return null;
+  };
+
+  const goToNextLesson = () => {
+    const next = findNextLesson();
+    if (next) {
+      selectLesson(next);
+    }
+    setShowNext(false);
+    if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
+    if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
   };
 
   const totalLessons = modules.reduce(
@@ -544,6 +551,18 @@ export default function LearningPlatform() {
                   onClick={togglePlay}
                 >
                   <Play className="w-6 h-6 ml-1" />
+                </Button>
+              </div>
+            )}
+
+            {showNext && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60 flex-col gap-4">
+                <Button
+                  size="lg"
+                  className="animate-pulse"
+                  onClick={goToNextLesson}
+                >
+                  Przejdź do następnego materiału ({countdown})
                 </Button>
               </div>
             )}
