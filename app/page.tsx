@@ -224,6 +224,7 @@ export default function LearningPlatform() {
     const handleDurationChange = () => setDuration(video.duration);
     const handleEnded = () => {
       setIsPlaying(false);
+      markLessonCompleted(currentLesson.id);
       const nextLesson = findNextLesson();
       if (nextLesson) {
         setShowNext(true);
@@ -401,6 +402,20 @@ export default function LearningPlatform() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const markLessonCompleted = (lessonId: string) => {
+    setModules((prevModules) =>
+      prevModules.map((module) => ({
+        ...module,
+        lessons: module.lessons.map((lesson) =>
+          lesson.id === lessonId ? { ...lesson, completed: true } : lesson
+        ),
+      }))
+    );
+    if (currentLesson.id === lessonId) {
+      setCurrentLesson((prev) => ({ ...prev, completed: true }));
+    }
+  };
+
   const findNextLesson = () => {
     for (let mi = 0; mi < modules.length; mi++) {
       const lessons = modules[mi].lessons;
@@ -414,6 +429,7 @@ export default function LearningPlatform() {
   };
 
   const goToNextLesson = () => {
+    markLessonCompleted(currentLesson.id);
     const next = findNextLesson();
     if (next) {
       selectLesson(next);
