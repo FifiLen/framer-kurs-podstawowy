@@ -13,8 +13,7 @@ const courseData: Module[] = [
         duration: "1m 24s",
         completed: true,
         videoUrl: "/videos/framer-wprowadzenie.mov",
-        description:
-          "Dowiedz się, czego nauczysz się w trakcie kursu i zobacz jak działa Framer.",
+        description: "Krótka prezentacja kursu i możliwości Framera.",
       },
       {
         id: "framer-zakladanie-konta",
@@ -22,8 +21,7 @@ const courseData: Module[] = [
         duration: "1m 25s",
         completed: true,
         videoUrl: "/videos/kurs-framer-zakladanie-konta.mov",
-        description:
-          "Praktyczny poradnik zakładania konta we Framerze.",
+        description: "Zakładamy konto i konfigurujemy podstawowe ustawienia.",
       },
       {
         id: "framer-podstawowe-funkcje",
@@ -31,8 +29,7 @@ const courseData: Module[] = [
         duration: "6m 35s",
         completed: true,
         videoUrl: "/videos/framer-podstawowe-funkcje.mov",
-        description:
-          "Omówienie najważniejszych funkcji edytora.",
+        description: "Przegląd głównych narzędzi i interfejsu.",
       },
     ],
   },
@@ -48,7 +45,8 @@ const courseData: Module[] = [
         duration: "4m 26s",
         completed: false,
         videoUrl: "/videos/framer-tworzenie-sekcji.mov",
-        description: "Zobacz jak przygotować i sformatować sekcję w projekcie.",
+        description:
+          "Budujemy sekcję i omawiamy najczęstsze opcje formatowania.",
       },
       {
         id: "canvas",
@@ -56,7 +54,7 @@ const courseData: Module[] = [
         duration: "6m 51s",
         completed: false,
         videoUrl: "/videos/framer-podstrona-linki.mov",
-        description: "Dodawanie podstron i linków w ramach projektu.",
+        description: "Łączymy strony i tworzymy nawigację.",
       },
     ],
   },
@@ -72,7 +70,8 @@ const courseData: Module[] = [
         duration: "7m 4s",
         completed: false,
         videoUrl: "/videos/framer-narzedzia-ai.mov",
-        description: "Przyjrzymy się narzędziom AI w Framerze - Wireframer i Workshop.",
+        description:
+          "Testujemy wbudowane narzędzia AI: Wireframer oraz Workshop.",
       },
     ],
   },
@@ -88,7 +87,8 @@ const courseData: Module[] = [
         duration: "6m 2s",
         completed: false,
         videoUrl: "/videos/framer-rozwijanie-strony.mov",
-        description: "Pracujemy nad rozbudową strony krok po kroku.",
+        description:
+          "Krok po kroku rozwijamy stronę i dodajemy kolejne sekcje.",
       },
     ],
   },
@@ -104,11 +104,10 @@ const courseData: Module[] = [
         duration: "1m 56s",
         completed: false,
         videoUrl: "/videos/framer-podsumowanie-publikacja.mov",
-        description: "Czas na publikację projektu i krótkie podsumowanie.",
+        description: "Końcowa publikacja projektu i podsumowanie kursu.",
       },
     ],
   },
 ];
 
-export default courseData
-
+export default courseData;

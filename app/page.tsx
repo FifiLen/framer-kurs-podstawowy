@@ -12,42 +12,42 @@ import { Menu, Sun, Moon, ChevronRight } from "lucide-react";
 
 export default function LearningPlatform() {
   const { theme, setTheme } = useTheme();
-  const [modules, setModules] = useState<Module[]>(courseData);
-  const [currentLesson, setCurrentLesson] = useState<Lesson>(
-    courseData[0].lessons[0],
-  );
-  const [showSidebar, setShowSidebar] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const storedModules = localStorage.getItem("modules");
-    const storedLessonId = localStorage.getItem("currentLessonId");
-    if (storedModules) {
-      try {
-        const parsed: Module[] = JSON.parse(storedModules);
-        setModules(parsed);
-        if (storedLessonId) {
-          for (const mod of parsed) {
-            const found = mod.lessons.find(l => l.id === storedLessonId);
-            if (found) {
-              setCurrentLesson(found);
-              break;
-            }
-          }
-        }
-      } catch {
-        // ignore parsing errors
-      }
-    } else if (storedLessonId) {
-      for (const mod of courseData) {
-        const found = mod.lessons.find(l => l.id === storedLessonId);
-        if (found) {
-          setCurrentLesson(found);
-          break;
+  const [modules, setModules] = useState<Module[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("modules");
+      if (stored) {
+        try {
+          return JSON.parse(stored) as Module[];
+        } catch {
+          // ignore parsing errors
         }
       }
     }
-  }, []);
+    return courseData;
+  });
+  const [currentLesson, setCurrentLesson] = useState<Lesson>(() => {
+    if (typeof window !== "undefined") {
+      const storedLessonId = localStorage.getItem("currentLessonId");
+      const storedModules = localStorage.getItem("modules");
+      let modulesToSearch = courseData;
+      if (storedModules) {
+        try {
+          modulesToSearch = JSON.parse(storedModules) as Module[];
+        } catch {
+          // ignore parsing errors
+        }
+      }
+      if (storedLessonId) {
+        for (const mod of modulesToSearch) {
+          const found = mod.lessons.find(l => l.id === storedLessonId);
+          if (found) return found;
+        }
+      }
+    }
+    return courseData[0].lessons[0];
+  });
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("modules", JSON.stringify(modules));
