@@ -13,8 +13,7 @@ const courseData: Module[] = [
         duration: "1m 24s",
         completed: true,
         videoUrl: "/videos/framer-wprowadzenie.mov",
-        description:
-          "Krótka prezentacja kursu i możliwości Framera.",
+        description: "Krótka prezentacja kursu i możliwości Framera.",
       },
       {
         id: "framer-zakladanie-konta",
@@ -22,8 +21,7 @@ const courseData: Module[] = [
         duration: "1m 25s",
         completed: true,
         videoUrl: "/videos/kurs-framer-zakladanie-konta.mov",
-        description:
-          "Zakładamy konto i konfigurujemy podstawowe ustawienia.",
+        description: "Zakładamy konto i konfigurujemy podstawowe ustawienia.",
       },
       {
         id: "framer-podstawowe-funkcje",
@@ -31,8 +29,7 @@ const courseData: Module[] = [
         duration: "6m 35s",
         completed: true,
         videoUrl: "/videos/framer-podstawowe-funkcje.mov",
-        description:
-          "Przegląd głównych narzędzi i interfejsu.",
+        description: "Przegląd głównych narzędzi i interfejsu.",
       },
     ],
   },
@@ -48,7 +45,8 @@ const courseData: Module[] = [
         duration: "4m 26s",
         completed: false,
         videoUrl: "/videos/framer-tworzenie-sekcji.mov",
-        description: "Budujemy sekcję i omawiamy najczęstsze opcje formatowania.",
+        description:
+          "Budujemy sekcję i omawiamy najczęstsze opcje formatowania.",
       },
       {
         id: "canvas",
@@ -72,7 +70,8 @@ const courseData: Module[] = [
         duration: "7m 4s",
         completed: false,
         videoUrl: "/videos/framer-narzedzia-ai.mov",
-        description: "Testujemy wbudowane narzędzia AI: Wireframer oraz Workshop.",
+        description:
+          "Testujemy wbudowane narzędzia AI: Wireframer oraz Workshop.",
       },
     ],
   },
@@ -88,7 +87,8 @@ const courseData: Module[] = [
         duration: "6m 2s",
         completed: false,
         videoUrl: "/videos/framer-rozwijanie-strony.mov",
-        description: "Krok po kroku rozwijamy stronę i dodajemy kolejne sekcje.",
+        description:
+          "Krok po kroku rozwijamy stronę i dodajemy kolejne sekcje.",
       },
     ],
   },
@@ -110,5 +110,4 @@ const courseData: Module[] = [
   },
 ];
 
-export default courseData
-
+export default courseData;
