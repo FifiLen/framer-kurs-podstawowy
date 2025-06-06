@@ -20,6 +20,44 @@ export default function LearningPlatform() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const storedModules = localStorage.getItem("modules");
+    const storedLessonId = localStorage.getItem("currentLessonId");
+    if (storedModules) {
+      try {
+        const parsed: Module[] = JSON.parse(storedModules);
+        setModules(parsed);
+        if (storedLessonId) {
+          for (const mod of parsed) {
+            const found = mod.lessons.find(l => l.id === storedLessonId);
+            if (found) {
+              setCurrentLesson(found);
+              break;
+            }
+          }
+        }
+      } catch {
+        // ignore parsing errors
+      }
+    } else if (storedLessonId) {
+      for (const mod of courseData) {
+        const found = mod.lessons.find(l => l.id === storedLessonId);
+        if (found) {
+          setCurrentLesson(found);
+          break;
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("modules", JSON.stringify(modules));
+  }, [modules]);
+
+  useEffect(() => {
+    localStorage.setItem("currentLessonId", currentLesson.id);
+  }, [currentLesson]);
+
+  useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener("resize", handleResize);

@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+Install the dependencies first:
+
+```bash
+npm install
+```
+
+Then run the development server:
 
 ```bash
 npm run dev
@@ -13,6 +19,8 @@ pnpm dev
 # or
 bun dev
 ```
+
+Make sure to run `npm install` before using commands like `npm run lint`, `npm run build`, or `npx tsc`.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
