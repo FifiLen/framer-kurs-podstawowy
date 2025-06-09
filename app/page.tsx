@@ -66,9 +66,7 @@ export default function LearningPlatform() {
 
   const toggleModule = (id: string) => {
     setModules(
-      modules.map(m =>
-        m.id === id ? { ...m, expanded: !m.expanded } : m,
-      ),
+      modules.map(m => (m.id === id ? { ...m, expanded: !m.expanded } : m)),
     );
   };
 

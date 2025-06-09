@@ -71,7 +71,7 @@ export default function VideoPlayer({
       video.removeEventListener("durationchange", handleDurationChange);
       video.removeEventListener("ended", handleEnded);
     };
-  }, [lesson]);
+  }, [lesson, onLessonComplete]);
 
   useEffect(() => {
     if (showNext) {
@@ -89,7 +89,7 @@ export default function VideoPlayer({
         clearInterval(countdownIntervalRef.current);
       if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
     };
-  }, [showNext]);
+  }, [showNext, onNextLesson]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -216,6 +216,7 @@ export default function VideoPlayer({
         onClick={togglePlay}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        key={lesson.id} // Add key to re-mount video on lesson change
       />
 
       {!isPlaying && (
