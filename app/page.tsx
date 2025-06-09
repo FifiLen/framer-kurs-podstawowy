@@ -12,44 +12,50 @@ import { Menu, Sun, Moon, ChevronRight } from "lucide-react";
 
 export default function LearningPlatform() {
   const { theme, setTheme } = useTheme();
-  const [modules, setModules] = useState<Module[]>(courseData);
-  const [currentLesson, setCurrentLesson] = useState<Lesson>(courseData[0].lessons[0]);
-  const [ready, setReady] = useState(false);
+  const [modules, setModules] = useState<Module[]>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("modules");
+      if (stored) {
+        try {
+          return JSON.parse(stored) as Module[];
+        } catch {
+          // ignore parsing errors
+        }
+      }
+    }
+    return courseData;
+  });
+  const [currentLesson, setCurrentLesson] = useState<Lesson>(() => {
+    if (typeof window !== "undefined") {
+      const storedLessonId = localStorage.getItem("currentLessonId");
+      const storedModules = localStorage.getItem("modules");
+      let modulesToSearch = courseData;
+      if (storedModules) {
+        try {
+          modulesToSearch = JSON.parse(storedModules) as Module[];
+        } catch {
+          // ignore parsing errors
+        }
+      }
+      if (storedLessonId) {
+        for (const mod of modulesToSearch) {
+          const found = mod.lessons.find(l => l.id === storedLessonId);
+          if (found) return found;
+        }
+      }
+    }
+    return courseData[0].lessons[0];
+  });
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const storedModules = localStorage.getItem("modules");
-    let parsed: Module[] | null = null;
-    if (storedModules) {
-      try {
-        parsed = JSON.parse(storedModules) as Module[];
-        setModules(parsed);
-      } catch {
-        // ignore parsing errors
-      }
-    }
-    const storedLessonId = localStorage.getItem("currentLessonId");
-    if (storedLessonId) {
-      const modulesToSearch = parsed || courseData;
-      for (const mod of modulesToSearch) {
-        const found = mod.lessons.find((l) => l.id === storedLessonId);
-        if (found) {
-          setCurrentLesson(found);
-          break;
-        }
-      }
-    }
-    setReady(true);
-  }, []);
+    localStorage.setItem("modules", JSON.stringify(modules));
+  }, [modules]);
 
   useEffect(() => {
-    if (ready) localStorage.setItem("modules", JSON.stringify(modules));
-  }, [modules, ready]);
-
-  useEffect(() => {
-    if (ready) localStorage.setItem("currentLessonId", currentLesson.id);
-  }, [currentLesson, ready]);
+    localStorage.setItem("currentLessonId", currentLesson.id);
+  }, [currentLesson]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -59,7 +65,9 @@ export default function LearningPlatform() {
   }, []);
 
   const toggleModule = (id: string) => {
-    setModules(modules.map(m => (m.id === id ? { ...m, expanded: !m.expanded } : m)));
+    setModules(
+      modules.map(m => (m.id === id ? { ...m, expanded: !m.expanded } : m)),
+    );
   };
 
   const selectLesson = (lesson: Lesson) => {
@@ -74,9 +82,9 @@ export default function LearningPlatform() {
       prevModules.map(module => ({
         ...module,
         lessons: module.lessons.map(lesson =>
-          lesson.id === lessonId ? { ...lesson, completed: true } : lesson
+          lesson.id === lessonId ? { ...lesson, completed: true } : lesson,
         ),
-      }))
+      })),
     );
     if (currentLesson.id === lessonId) {
       setCurrentLesson(prev => ({ ...prev, completed: true }));
@@ -101,14 +109,17 @@ export default function LearningPlatform() {
     if (next) setCurrentLesson(next);
   };
 
-  if (!ready) return null;
-
   return (
     <div className="min-h-screen gradient-bg">
       <header className="bg-card/80 backdrop-blur-sm border-b border-border px-4 md:px-6 py-4 sticky top-0 z-30">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="md:hidden" onClick={toggleSidebar}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="md:hidden"
+              onClick={toggleSidebar}
+            >
               <Menu className="w-5 h-5" />
             </Button>
             <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -119,13 +130,24 @@ export default function LearningPlatform() {
                 Framer dla każdego: Kurs podstawowy
               </h1>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-muted-foreground tracking-tight">Autor: Filip Lendel</span>
+                <span className="text-sm text-muted-foreground tracking-tight">
+                  Autor: Filip Lendel
+                </span>
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={toggleTheme} className="w-9 h-9 p-0">
-              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className="w-9 h-9 p-0"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -133,7 +155,10 @@ export default function LearningPlatform() {
 
       <div className="flex relative">
         {showSidebar && isMobile && (
-          <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={toggleSidebar} />
+          <div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            onClick={toggleSidebar}
+          />
         )}
 
         <div className="flex-1 min-w-0">
@@ -156,7 +181,11 @@ export default function LearningPlatform() {
         />
 
         {!showSidebar && (
-          <Button className="fixed top-1/2 right-4 z-20 shadow-lg hidden md:flex" size="sm" onClick={toggleSidebar}>
+          <Button
+            className="fixed top-1/2 right-4 z-20 shadow-lg hidden md:flex"
+            size="sm"
+            onClick={toggleSidebar}
+          >
             <ChevronRight className="w-4 h-4" />
           </Button>
         )}

@@ -1,7 +1,7 @@
-"use client"
-import { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
+"use client";
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import {
   Play,
   Pause,
@@ -10,191 +10,197 @@ import {
   Volume2,
   VolumeX,
   Maximize,
-  Minimize
-} from "lucide-react"
-import type { Lesson } from "./types"
+  Minimize,
+} from "lucide-react";
+import type { Lesson } from "./types";
 
 interface VideoPlayerProps {
-  lesson: Lesson
-  onLessonComplete: () => void
-  onNextLesson: () => void
+  lesson: Lesson;
+  onLessonComplete: () => void;
+  onNextLesson: () => void;
 }
 
-export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: VideoPlayerProps) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [duration, setDuration] = useState(0)
-  const [volume, setVolume] = useState(75)
-  const [isMuted, setIsMuted] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [playbackRate, setPlaybackRate] = useState(1)
-  const [showControls, setShowControls] = useState(true)
-  const [showNext, setShowNext] = useState(false)
-  const [countdown, setCountdown] = useState(5)
+export default function VideoPlayer({
+  lesson,
+  onLessonComplete,
+  onNextLesson,
+}: VideoPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(75);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [showControls, setShowControls] = useState(true);
+  const [showNext, setShowNext] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const controlsTimeoutRef = useRef<NodeJS.Timeout>()
-  const nextTimeoutRef = useRef<NodeJS.Timeout>()
-  const countdownIntervalRef = useRef<NodeJS.Timeout>()
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
+  const nextTimeoutRef = useRef<NodeJS.Timeout>();
+  const countdownIntervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const handleResize = () => {
-      setShowControls(true)
-    }
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+      setShowControls(true);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    const handleTimeUpdate = () => setCurrentTime(video.currentTime)
-    const handleDurationChange = () => setDuration(video.duration)
+    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+    const handleDurationChange = () => setDuration(video.duration);
     const handleEnded = () => {
-      setIsPlaying(false)
-      onLessonComplete()
-      setShowNext(true)
-    }
+      setIsPlaying(false);
+      onLessonComplete();
+      setShowNext(true);
+    };
 
-    video.addEventListener("timeupdate", handleTimeUpdate)
-    video.addEventListener("durationchange", handleDurationChange)
-    video.addEventListener("ended", handleEnded)
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("durationchange", handleDurationChange);
+    video.addEventListener("ended", handleEnded);
 
     return () => {
-      video.removeEventListener("timeupdate", handleTimeUpdate)
-      video.removeEventListener("durationchange", handleDurationChange)
-      video.removeEventListener("ended", handleEnded)
-    }
-  }, [lesson])
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.removeEventListener("durationchange", handleDurationChange);
+      video.removeEventListener("ended", handleEnded);
+    };
+  }, [lesson, onLessonComplete]);
 
   useEffect(() => {
     if (showNext) {
-      setCountdown(5)
+      setCountdown(5);
       countdownIntervalRef.current = setInterval(() => {
-        setCountdown((c) => c - 1)
-      }, 1000)
+        setCountdown(c => c - 1);
+      }, 1000);
       nextTimeoutRef.current = setTimeout(() => {
-        onNextLesson()
-        setShowNext(false)
-      }, 5000)
+        onNextLesson();
+        setShowNext(false);
+      }, 5000);
     }
     return () => {
-      if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current)
-      if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current)
-    }
-  }, [showNext])
+      if (countdownIntervalRef.current)
+        clearInterval(countdownIntervalRef.current);
+      if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
+    };
+  }, [showNext, onNextLesson]);
 
   const togglePlay = () => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
     if (isPlaying) {
-      video.pause()
+      video.pause();
     } else {
-      video.play()
+      video.play();
     }
-    setIsPlaying(!isPlaying)
-    setShowNext(false)
-  }
+    setIsPlaying(!isPlaying);
+    setShowNext(false);
+  };
 
   const handleSeek = (value: number[]) => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    const newTime = (value[0] / 100) * duration
-    video.currentTime = newTime
-    setCurrentTime(newTime)
-  }
+    const newTime = (value[0] / 100) * duration;
+    video.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
 
   const handleVolumeChange = (value: number[]) => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    const newVolume = value[0]
-    video.volume = newVolume / 100
-    setVolume(newVolume)
-    setIsMuted(newVolume === 0)
-  }
+    const newVolume = value[0];
+    video.volume = newVolume / 100;
+    setVolume(newVolume);
+    setIsMuted(newVolume === 0);
+  };
 
   const toggleMute = () => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
     if (isMuted) {
-      video.volume = volume / 100
-      setIsMuted(false)
+      video.volume = volume / 100;
+      setIsMuted(false);
     } else {
-      video.volume = 0
-      setIsMuted(true)
+      video.volume = 0;
+      setIsMuted(true);
     }
-  }
+  };
 
   const skipForward = () => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    video.currentTime = Math.min(video.currentTime + 10, duration)
-  }
+    video.currentTime = Math.min(video.currentTime + 10, duration);
+  };
 
   const skipBackward = () => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    video.currentTime = Math.max(video.currentTime - 10, 0)
-  }
+    video.currentTime = Math.max(video.currentTime - 10, 0);
+  };
 
   const toggleFullscreen = () => {
-    const container = containerRef.current
-    if (!container) return
+    const container = containerRef.current;
+    if (!container) return;
 
     if (!isFullscreen) {
       if (container.requestFullscreen) {
-        container.requestFullscreen()
+        container.requestFullscreen();
       }
     } else {
       if (document.exitFullscreen) {
-        document.exitFullscreen()
+        document.exitFullscreen();
       }
     }
-    setIsFullscreen(!isFullscreen)
-  }
+    setIsFullscreen(!isFullscreen);
+  };
 
   const changePlaybackRate = () => {
-    const video = videoRef.current
-    if (!video) return
+    const video = videoRef.current;
+    if (!video) return;
 
-    const rates = [0.5, 0.75, 1, 1.25, 1.5, 2]
-    const currentIndex = rates.indexOf(playbackRate)
-    const nextRate = rates[(currentIndex + 1) % rates.length]
+    const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    const currentIndex = rates.indexOf(playbackRate);
+    const nextRate = rates[(currentIndex + 1) % rates.length];
 
-    video.playbackRate = nextRate
-    setPlaybackRate(nextRate)
-  }
+    video.playbackRate = nextRate;
+    setPlaybackRate(nextRate);
+  };
 
   const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60)
-    const seconds = Math.floor(time % 60)
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`
-  }
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   const handleMouseMove = () => {
-    setShowControls(true)
+    setShowControls(true);
     if (controlsTimeoutRef.current) {
-      clearTimeout(controlsTimeoutRef.current)
+      clearTimeout(controlsTimeoutRef.current);
     }
     controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying) setShowControls(false)
-    }, 3000)
-  }
+      if (isPlaying) setShowControls(false);
+    }, 3000);
+  };
 
   const goToNext = () => {
-    if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current)
-    if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current)
-    setShowNext(false)
-    onNextLesson()
-  }
+    if (countdownIntervalRef.current)
+      clearInterval(countdownIntervalRef.current);
+    if (nextTimeoutRef.current) clearTimeout(nextTimeoutRef.current);
+    setShowNext(false);
+    onNextLesson();
+  };
 
   return (
     <div
@@ -210,6 +216,7 @@ export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: 
         onClick={togglePlay}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        key={lesson.id} // Add key to re-mount video on lesson change
       />
 
       {!isPlaying && (
@@ -226,7 +233,11 @@ export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: 
 
       {showNext && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/60 flex-col gap-4">
-          <Button size="lg" className="relative animate-pulse" onClick={goToNext}>
+          <Button
+            size="lg"
+            className="relative animate-pulse"
+            onClick={goToNext}
+          >
             Przejdź do następnego materiału ({countdown})
             <span
               className="absolute bottom-0 left-0 h-0.5 bg-white transition-all"
@@ -267,7 +278,11 @@ export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: 
               className="text-white hover:bg-white/20"
               onClick={togglePlay}
             >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              {isPlaying ? (
+                <Pause className="w-5 h-5" />
+              ) : (
+                <Play className="w-5 h-5" />
+              )}
             </Button>
             <Button
               size="sm"
@@ -298,7 +313,11 @@ export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: 
                 className="text-white hover:bg-white/20"
                 onClick={toggleMute}
               >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                {isMuted ? (
+                  <VolumeX className="w-4 h-4" />
+                ) : (
+                  <Volume2 className="w-4 h-4" />
+                )}
               </Button>
               <div className="w-20">
                 <Slider
@@ -315,7 +334,11 @@ export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: 
               className="text-white hover:bg-white/20"
               onClick={toggleFullscreen}
             >
-              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+              {isFullscreen ? (
+                <Minimize className="w-4 h-4" />
+              ) : (
+                <Maximize className="w-4 h-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -325,5 +348,5 @@ export default function VideoPlayer({ lesson, onLessonComplete, onNextLesson }: 
         <span className="font-bold text-white">F</span>
       </div>
     </div>
-  )
+  );
 }
