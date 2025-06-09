@@ -12,51 +12,44 @@ import { Menu, Sun, Moon, ChevronRight } from "lucide-react";
 
 export default function LearningPlatform() {
   const { theme, setTheme } = useTheme();
-  const [modules, setModules] = useState<Module[]>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("modules");
-      if (stored) {
-        try {
-          return JSON.parse(stored) as Module[];
-        } catch {
-          // ignore parsing errors
-        }
-      }
-    }
-    return courseData;
-  });
-  const [currentLesson, setCurrentLesson] = useState<Lesson>(() => {
-    if (typeof window !== "undefined") {
-      const storedLessonId = localStorage.getItem("currentLessonId");
-      const storedModules = localStorage.getItem("modules");
-      let modulesToSearch = courseData;
-      if (storedModules) {
-        try {
-          modulesToSearch = JSON.parse(storedModules) as Module[];
-        } catch {
-          // ignore parsing errors
-        }
-      }
-      if (storedLessonId) {
-        for (const mod of modulesToSearch) {
-          const found = mod.lessons.find((l) => l.id === storedLessonId);
-          if (found) return found;
-        }
-      }
-    }
-    return courseData[0].lessons[0];
-  });
+  const [modules, setModules] = useState<Module[]>(courseData);
+  const [currentLesson, setCurrentLesson] = useState<Lesson>(courseData[0].lessons[0]);
+  const [ready, setReady] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
+  useEffect(() => {
+    const storedModules = localStorage.getItem("modules");
+    let parsed: Module[] | null = null;
+    if (storedModules) {
+      try {
+        parsed = JSON.parse(storedModules) as Module[];
+        setModules(parsed);
+      } catch {
+        // ignore parsing errors
+      }
+    }
+    const storedLessonId = localStorage.getItem("currentLessonId");
+    if (storedLessonId) {
+      const modulesToSearch = parsed || courseData;
+      for (const mod of modulesToSearch) {
+        const found = mod.lessons.find((l) => l.id === storedLessonId);
+        if (found) {
+          setCurrentLesson(found);
+          break;
+        }
+      }
+    }
+    setReady(true);
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("modules", JSON.stringify(modules));
-  }, [modules]);
+    if (ready) localStorage.setItem("modules", JSON.stringify(modules));
+  }, [modules, ready]);
 
   useEffect(() => {
-    localStorage.setItem("currentLessonId", currentLesson.id);
-  }, [currentLesson]);
+    if (ready) localStorage.setItem("currentLessonId", currentLesson.id);
+  }, [currentLesson, ready]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -107,6 +100,8 @@ export default function LearningPlatform() {
     const next = findNextLesson();
     if (next) setCurrentLesson(next);
   };
+
+  if (!ready) return null;
 
   return (
     <div className="min-h-screen gradient-bg">
