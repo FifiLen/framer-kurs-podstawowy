@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import ReactPlayer from "react-player";
 import {
   Play,
   Pause,
@@ -42,6 +43,9 @@ export default function VideoPlayer({
   const nextTimeoutRef = useRef<NodeJS.Timeout>();
   const countdownIntervalRef = useRef<NodeJS.Timeout>();
 
+  const isYouTube =
+    lesson.videoUrl.includes("youtube.com") || lesson.videoUrl.includes("youtu.be");
+
   useEffect(() => {
     const handleResize = () => {
       setShowControls(true);
@@ -51,6 +55,7 @@ export default function VideoPlayer({
   }, []);
 
   useEffect(() => {
+    if (isYouTube) return;
     const video = videoRef.current;
     if (!video) return;
 
@@ -71,7 +76,7 @@ export default function VideoPlayer({
       video.removeEventListener("durationchange", handleDurationChange);
       video.removeEventListener("ended", handleEnded);
     };
-  }, [lesson, onLessonComplete]);
+  }, [lesson, onLessonComplete, isYouTube]);
 
   useEffect(() => {
     if (showNext) {
@@ -201,6 +206,37 @@ export default function VideoPlayer({
     setShowNext(false);
     onNextLesson();
   };
+
+  if (isYouTube) {
+    return (
+      <div ref={containerRef} className="relative bg-black aspect-video">
+        <ReactPlayer
+          url={lesson.videoUrl}
+          width="100%"
+          height="100%"
+          controls
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => {
+            setIsPlaying(false);
+            onLessonComplete();
+            setShowNext(true);
+          }}
+        />
+        {showNext && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 flex-col gap-4">
+            <Button size="lg" className="relative animate-pulse" onClick={goToNext}>
+              Przejdź do następnego materiału ({countdown})
+              <span
+                className="absolute bottom-0 left-0 h-0.5 bg-white transition-all"
+                style={{ width: `${((5 - countdown) / 5) * 100}%` }}
+              />
+            </Button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
